@@ -1,0 +1,8 @@
+streamlit
+cython
+tensorflow==2.2.0
+numpy
+pandas
+pycocotools
+joblib
+opencv-python-headless
