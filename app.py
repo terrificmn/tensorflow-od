@@ -13,7 +13,7 @@ import time
 
 from object_detection.utils import label_map_util
 
-from ml1 import load_model, show_inference
+from tensorflow_od import load_model, show_inference
 from image_func import load_image, save_uploaded_file 
 
 st.set_page_config(page_title='ml', page_icon=None, layout='centered', initial_sidebar_state='auto')
