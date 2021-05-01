@@ -1,3 +1,6 @@
-data/images/user-upload
+enet_data
+data
+yolo_model
+*.mp4
 models
 __pycache__

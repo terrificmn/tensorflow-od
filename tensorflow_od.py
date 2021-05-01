@@ -4,6 +4,7 @@ import numpy as np
 import os
 import six.moves.urllib as urllib
 import sys
+import time
 
 import tensorflow as tf
 import pathlib
@@ -71,12 +72,20 @@ def run_inference_for_single_image(model, image):
 
 
 
-def show_inference(model, image_path):
+def show_inference(model, image_path, isImage=True):
     st.spinner()
     with st.spinner(text='모델 로드 완료! 분석을 시작합니다.'):
         # the array based representation of the image will be used later in order to prepare the
         # result image with boxes and labels on it.
-        image_np = np.array(Image.open(image_path)) # Image.open()은 RGB로 읽어들임. cv2라이브러리만 빼고 (BGR)
+        #print(image_path)
+        #return
+        startTime = time.time()
+        print(startTime)
+        # 영상 캡쳐 일때 처리 (이미 cv2로 열어서 오기 때문에 따로 실행 안함)
+        if isImage == False:
+            image_np = image_path
+        else :
+            image_np = np.array(Image.open(image_path)) # Image.open()은 RGB로 읽어들임. cv2라이브러리만 빼고 (BGR)
         
         # Actual detection.
         output_dict = run_inference_for_single_image(model, image_np)
@@ -91,7 +100,11 @@ def show_inference(model, image_path):
             instance_masks=output_dict.get('detection_masks_reframed',None),
             use_normalized_coordinates=True,
             line_thickness=8)
-
+        endTime = time.time()
+        print(endTime-startTime)
         st.success('분석이 완료 되었습니다.')
-        st.balloons()
+        #함수 호출한 곳에서 cv2.write()을 사용하기 때문에 (처음에 cv2로 읽음 그대로 리턴해주면 색이 제대로 저장 나옴)
+        #image_np = cv2.cvtColor(image_np, cv2.COLOR_BGR2RGB)  #st.image로 보여줄려면은 주석해제, BGR에서 RGB로 바꿔야함
+        #st.image로 보여주고 후 리턴은 다시 BGR로 바꿔줘야함
         st.image(image_np)
+        return image_np

@@ -30,7 +30,7 @@ def save_uploaded_file(directory, img):
     img.save(directory + '/' + filename ) #시간랜덤으로만들어진 문자열+확장자 저장
     
     #st.success('{}이 {}에 파일이 저장 되었습니다.'.format(filename, directory) )
-    st.success('파일이 저장 되었습니다. 분석을 시작합니다.')
+    
     return filename
 
 
