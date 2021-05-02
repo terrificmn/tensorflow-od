@@ -67,8 +67,8 @@ def reCaptureVideo(type, videoPath) :
                 #save resized image 
                 out.write(processedImg)
 
-                if cv2.waitKey(25) & 0xFF == 27:
-                    break
+                # if cv2.waitKey(25) & 0xFF == 27:  # 웹브라우저에서는 안됨
+                #     break
             else:
                 break
     

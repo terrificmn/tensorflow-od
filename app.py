@@ -2,39 +2,45 @@
 # 소스파일을 컨테이너로 복사시켜서 해야지 실행이 됨
 # 로컬에서 protoc 컴파일 후 api설치까지 해도.. 컨테이너에서 인식을 못하는거 같음
 # 도커 컨테이너 안에 적용을 시킨 후 (protoc등..api설치까지)
+import os
+
+############ 도커파일로 배포할 때는 아래코드 제거할 것-gpu 설정 코드임
+os.environ["KERAS_BACKEND"] = "plaidml.keras.backend"
+os.environ["PLAIDML_NATIVE_PATH"] = "/home/sgtocta/.local/lib/libplaidml.so"
+os.environ["RUNFILES_DIR"]="/home/sgtocta/.local/share/plaidml"
+############ 도커파일로 배포할 때는 위의 코드 제거할 것
 
 import streamlit as st
 import pathlib
 import cv2
-import os
+import time
+
 from PIL import Image
 from datetime import datetime
-import time
 
 from object_detection.utils import label_map_util
 
+#사용자 함수
 from tensorflow_od import load_model, show_inference
 from image_func import load_image, save_uploaded_file 
 from video_func import save_uploaded_video
 from yolo import get_classes, detect_image
 from saveCap import reCaptureVideo
-
 from semanticSeg import makeSegmentation
 from scaledown import imageResize
 from fake import fakeShow
 from ec2_warning import warningPrint
+
 
 st.set_page_config(page_title='ml', page_icon=None, layout='centered', initial_sidebar_state='auto')
 
 
 def main() :
 
-
     selectboxList = ['메뉴를 선택하세요', 'Tensorflow-object-detection', 'Video Object Detection',
                         'YOLO', 'SSD', 'Semantic Segmentation', 'aboutMe']
     selectbox = st.sidebar.selectbox("선택하세요", selectboxList)
-    st.title('안녕하세요')
-    st.title('메뉴를 선택하세요')    
+    
     
     if selectbox == 'test' :
         # 테스트 입니다.
@@ -76,30 +82,30 @@ def main() :
         ############실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
         ############실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
         ############ 여기서부터 주석 시작 #######
-        if upload_img_list is not None:
-            img = load_image(upload_img_list)
+        # if upload_img_list is not None:
+        #     img = load_image(upload_img_list)
             
-            #한장만 저장
-            if st.button('저장 및 분석하기') :
-                directory = 'data/images/user-upload'
-                filename = save_uploaded_file(directory, img)
+        #     #한장만 저장
+        #     if st.button('저장 및 분석하기') :
+        #         directory = 'data/images/user-upload'
+        #         filename = save_uploaded_file(directory, img)
                 
-                PATH_TO_TEST_IMAGES_DIR = pathlib.Path('data/images/user-upload')
-                TEST_IMAGE_PATHS = pathlib.Path(PATH_TO_TEST_IMAGES_DIR, filename)
-                print(TEST_IMAGE_PATHS)
-                #TEST_IMAGE_PATHS = sorted(list(PATH_TO_TEST_IMAGES_DIR.glob("*.jpg")))# 여러장일 때사용
+        #         PATH_TO_TEST_IMAGES_DIR = pathlib.Path('data/images/user-upload')
+        #         TEST_IMAGE_PATHS = pathlib.Path(PATH_TO_TEST_IMAGES_DIR, filename)
+        #         print(TEST_IMAGE_PATHS)
+        #         #TEST_IMAGE_PATHS = sorted(list(PATH_TO_TEST_IMAGES_DIR.glob("*.jpg")))# 여러장일 때사용
 
-                # # # 모델 불러오기 , 함수호출
-                model_name = 'faster_rcnn_inception_resnet_v2_640x640_coco17_tpu-8'
-                model_date = '20200711'
-                print('model: {}'.format(model_name))
+        #         # # # 모델 불러오기 , 함수호출
+        #         model_name = 'faster_rcnn_inception_resnet_v2_640x640_coco17_tpu-8'
+        #         model_date = '20200711'
+        #         print('model: {}'.format(model_name))
 
-                print('start to load model...')
-                detection_model = load_model(model_name, model_date)
-                # #print(detection_model.signatures['serving_default'].output_dtypes)
-                # #print(detection_model.signatures['serving_default'].output_shapes)
+        #         print('start to load model...')
+        #         detection_model = load_model(model_name, model_date)
+        #         # #print(detection_model.signatures['serving_default'].output_dtypes)
+        #         # #print(detection_model.signatures['serving_default'].output_shapes)
 
-                show_inference(detection_model, TEST_IMAGE_PATHS)
+        #         show_inference(detection_model, TEST_IMAGE_PATHS)
                 # for image_path in TEST_IMAGE_PATHS:  #여러장 지원할 때, 현재 1장만 지원함 
                 #     show_inference(detection_model, image_path)
             ############여기까지 실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
@@ -109,9 +115,10 @@ def main() :
         
         ##### cpu문제로 이미지 보여주기용 입니다. #########
         ##### cpu문제로 이미지 보여주기용 입니다. #########
-        #warningPrint()
+        warningPrint()
         
-        video_file = open('data/videos/show/complete_ftod_image.mp4', 'rb')
+        st.write('Object Detection을 local에서 하는 캡쳐영상 입니다.')
+        video_file = open('data/videos/show/tfod_image_processing_output_final.mp4', 'rb')
         video_bytes = video_file.read()
         st.video(video_bytes)
 
@@ -121,7 +128,7 @@ def main() :
         
         st.write('사진을 선택해주세요')
 
-        radioSelection = st.radio('샘플사진을 선택하세요', ['pic1', 'pic2', 'pic3' ])
+        radioSelection = st.radio('샘플사진을 선택하세요', ['pic1', 'pic2', 'pic3', 'pic4' ])
         
         if radioSelection == 'pic1':
             imgName = 'park-people-1280.jpg'
@@ -136,6 +143,11 @@ def main() :
         elif radioSelection == 'pic3':
             imgName = 'elder-1920.jpg'
             resizedImg = imageResize(radioSelection, imgName, 0.15, 0.15)
+            st.image(resizedImg)
+        
+        elif radioSelection == 'pic4':
+            imgName = 'girl-640.jpg'
+            resizedImg = imageResize(radioSelection, imgName)
             st.image(resizedImg)
 
         if st.button('선택한 이미지 디텍션 하기') :
@@ -156,13 +168,20 @@ def main() :
                     동영상에도 적용해 볼 수가 있습니다.')
 
         st.write('')
-        
+        ####### 워닝 및 비디오만 보여주기
         warningPrint()
         
+        st.write('Object Dectection하는 과정 입니다.')
         video_file = open('data/videos/show/complete_ftod_video_output.mp4', 'rb')
         video_bytes = video_file.read()
         st.video(video_bytes)
-        
+
+        st.write('Object Dectection이 완료된 영상 입니다.')
+        video_file = open('data/videos/show/complete_ftod_video_output.mp4', 'rb')
+        video_bytes = video_file.read()
+        st.video(video_bytes)
+
+        ####### 워닝 및 비디오만 보여주기
 
         ############실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
         ############실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
@@ -232,8 +251,8 @@ def main() :
         #                 #save resized image 
         #                 out.write(img)
 
-        #                 if cv2.waitKey(25) & 0xFF == 27:
-        #                     break
+        #                 # if cv2.waitKey(25) & 0xFF == 27:  #브라우저에서는 안되는 듯
+        #                 #     break
         #             else:
         #                 break
 
@@ -241,9 +260,9 @@ def main() :
         #         cap.release()
         #         print('complete')
         #         print('total time: {}'.format(totalTime))
-        #         #video_file = open('data/videos/test.mp4', 'rb')  # mp4v로 인코딩 했다면 브라우저에서 실행이 안됨
-        #         #video_bytes = video_file.read() 
-        #         #st.video(video_bytes) 
+                #video_file = open('data/videos/test.mp4', 'rb')  # mp4v로 인코딩 했다면 브라우저에서 실행이 안됨
+                #video_bytes = video_file.read() 
+                #st.video(video_bytes) 
         ############실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
         ############실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
 
@@ -275,16 +294,20 @@ def main() :
         st.text('아래의 사진을 확인해 보세요. (원본사진을 확인하세요)')
         st.image('data/images/test/traffic-640.jpg')
 
+         ###### warning 및 동영상으로 대체 부분 ######
+        ###### warning 및 동영상으로 대체 부분 ######
         text = '이미지'
         warningPrint(text)
 
         st.write('미리 로컬에서 오브젝트 디텍션을 마친 이미지 입니다.')
         st.image('data/images/show/ssd_output.jpg')
+         ###### warning 및 동영상으로 대체 부분 ######
+        ###### warning 및 동영상으로 대체 부분 ######
 
         ############실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
         ############실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
         #한장만 저장
-        # if st.button('ssd 전송') :
+        # if st.button('SSD object detection') :
             
         #     # directory = 'data/images/user-upload'
         #     #filename = save_uploaded_file(directory, img)
@@ -303,8 +326,8 @@ def main() :
         #     # #print(detection_model.signatures['serving_default'].output_shapes)
 
         #     show_inference(detection_model, TEST_IMAGE_PATHS)
-        #     #for image_path in TEST_IMAGE_PATHS:
-        #     # show_inference(detection_model, image_path)
+            #for image_path in TEST_IMAGE_PATHS:
+            # show_inference(detection_model, image_path)
 
         # ############실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
         # ############실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
@@ -364,12 +387,13 @@ def main() :
             upload_video = st.file_uploader('동영상 파일 업로드', type=['mp4', 'avi'], accept_multiple_files=False)
             upload_img_list = None
 
+        ###### warning 및 동영상으로 대체 부분 ######
+        ###### warning 및 동영상으로 대체 부분 ######
         warningPrint()
-
         
-        st.text('사진 또는 동영상 영상을 확인하려면 위의 라디오 버튼을 선택해주세요')
-        
-        if radioSelection == '사진' :
+        st.text('Object Dectection이 완료된 사진 또는 동영상 영상을 선택하세요')
+        fakeSelection = st.radio('사진 또는 동영상을 선택하세요', ['image', 'video'])
+        if fakeSelection == 'image' :
             st.write('<로컬에서 확인한 YOLO 이미지 Dectection 영상>')
             video_file = open('data/videos/show/complete_ftod_video_output.mp4', 'rb')
             video_bytes = video_file.read()
@@ -379,11 +403,14 @@ def main() :
             video_file = open('data/videos/show/complete_ftod_video_output.mp4', 'rb')
             video_bytes = video_file.read()
             st.video(video_bytes)   
+        
+        ###### warning 및 동영상으로 대체 부분 ######
+        ###### warning 및 동영상으로 대체 부분 ######
 
         ###########실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
         ###########실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
 
-        # 이미지 업로드일 경우 실행
+        #이미지 업로드일 경우 실행
         # if upload_img_list is not None:
         #     # 이미지 로드
         #     if st.button('저장 및 분석하기') :
@@ -527,46 +554,57 @@ def main() :
         st.write('')        
         st.write('이번 프로젝트에 사용한 고마운 프로그램들')
         
-        st.write('파이썬 언어로 개발했습니다.')
+        
         st.image('data/images/logo/python_logo.png')
+        st.write('현재 애플리케이션은 파이썬 언어로 개발했습니다.')
 
-        st.write('tensorflow Model 똑똑한 능력자들이 만든~! 감사합니다!')
+        
         st.image('data/images/logo/tensorflow_logo.png')
+        st.write('tensorflow Model 똑똑한 능력자들이 만든~! 감사합니다!')
 
-        st.write('streamlit 프레임워크~ 메인 application 입니다.')
+        
         st.image('data/images/logo/streamlit_logo.png')
+        st.write('streamlit 프레임워크~ 깔끔한 구성을 할 수 있었습니다.')
 
+        st.image('data/images/logo/awsec2_logo.png')
         st.write('AWS EC2 서버 입니다. free tier 이지만 \
                     서버로 활용하기에는 정말 훌륭하고 늘 배우고 있습니다.\
                     tensorflow model을 적용하기에는 어렵다는것도 배웁니다.')
-        st.image('data/images/logo/awsec2_logo.png')
 
+        st.image('data/images/logo/ubuntu_logo.png')
         st.write('리눅스: 우분투18.04 ubuntu bionic beaver\
                     AWS 서버의 우분투 배포판 운영체제 입니다.')
-        st.image('data/images/logo/ubuntu_logo.png')
 
-        st.write('리눅스: CentOS 8 ~ 로컬의 개발환경 OS, 개발할 때 사용했습니다~ \
-                    로컬에서 개발하고 GitHub로 commit & push 합니다.')
+        
         st.image('data/images/logo/centos_logo.png')
+        st.write('리눅스: CentOS 8 ~ 로컬의 개발환경 OS, 개발할 때 사용했습니다~')
 
-        st.write('git을 CLI 에서 실행 합니다.\
-                    로컬에서 commit 후 AWS 서버에서 pull 받습니다.')
+
+        
         st.image('data/images/logo/git_logo.png')
+        st.write('git을 CLI 에서 실행 합니다.\
+                    로컬에서 commit, push 후 AWS 서버에서 pull로 받습니다.')
 
-
-        st.write('GitHub repository를 이용해서 서버에 배포 했습니다\
-                    업데이트 수정사항이 생길 때마다 사용합니다.')
+        
         st.image('data/images/logo/github_logo.png')
-
-        st.write('도커! 현재 이 application은 도커환경에서 실행되고 있습니다!\
-                    어디에서나 동일한 환경으로 맞춰줍니다.')
+        st.write('GitHub repository를 이용해서 서버에 배포 합니다.\
+                    업데이트 수정사항이 생길 때마다 사용합니다.')
+        
+        
         st.image('data/images/logo/docker_logo.png')
+        st.write('도커! 현재 이 application은 도커환경에서 실행되고 있습니다!\
+                    동일한 개발환경에서도 컨테이너로 구성 합니다.')
 
+        st.image('data/images/logo/plaidml_logo.png')
+        st.write('인텔의 open소스 plaidml은 GPU로 연산 할 수 있게 도와줍니다.\
+                    특히 Mac 이나 AMD 그래픽카드로 처리가 가능해 집니다.')
+
+        st.image('data/images/logo/anaconda_logo.png')
         st.write('아나콘다! 파이썬 로고가 뱀이라서? 아나콘다도 뱀이였구나..?\
                     초기 가상환경을 셋팅하는데 기본 구성 테스트에 사용하였습니다.')
-        st.image('data/images/logo/anaconda_logo.png')
 
-        # 파이썬, tensorflow, 스트림릿, 리눅스, 도커, 아나콘다, 
+
+
 
 
 if __name__ == '__main__' :
