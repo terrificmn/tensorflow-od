@@ -4,3 +4,4 @@ yolo_model
 *.mp4
 models
 __pycache__
+test_sample_plaidml.py

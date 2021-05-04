@@ -71,7 +71,6 @@ def run_inference_for_single_image(model, image):
     return output_dict
 
 
-
 def show_inference(model, image_path, isImage=True):
     st.spinner()
     with st.spinner(text='모델 로드 완료! 분석을 시작합니다.'):
@@ -84,7 +83,7 @@ def show_inference(model, image_path, isImage=True):
         # 영상 캡쳐 일때 처리 (이미 cv2로 열어서 오기 때문에 따로 실행 안함)
         if isImage == False:
             image_np = image_path
-        else :
+        else :  # True 이미지일 경우
             image_np = np.array(Image.open(image_path)) # Image.open()은 RGB로 읽어들임. cv2라이브러리만 빼고 (BGR)
         
         # Actual detection.

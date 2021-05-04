@@ -22,7 +22,6 @@ def process_image(img):
 def get_classes(file) :
     """ 클래스의 이름을 가져온다 
         file 받으면 리스트로 클래스 이름을 반환한다 """
-    
     with open(file) as f:
         name_of_class = f.readlines() # 전체 라인 가져오기
         #list comprehesion -- 전체 가지고 와서 strip()해주기
@@ -67,7 +66,6 @@ def detect_image( image, yolo, all_classes) :
     all_classes: 전체 클래스 이름
 
     변환된 이미지 리턴! """
-    
     #process_image()함수 호출로 프로세싱된 이미지 받아온다
     pimage = process_image(image)
 

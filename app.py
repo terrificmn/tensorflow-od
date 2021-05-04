@@ -30,6 +30,7 @@ from semanticSeg import makeSegmentation
 from scaledown import imageResize
 from fake import fakeShow
 from ec2_warning import warningPrint
+from local import localImageShow
 
 
 st.set_page_config(page_title='ml', page_icon=None, layout='centered', initial_sidebar_state='auto')
@@ -37,7 +38,7 @@ st.set_page_config(page_title='ml', page_icon=None, layout='centered', initial_s
 
 def main() :
 
-    selectboxList = ['메뉴를 선택하세요', 'Tensorflow-object-detection', 'Video Object Detection',
+    selectboxList = ['메뉴를 선택하세요', 'Tensorflow-object-detection', 'TF Video Object Detection',
                         'YOLO', 'SSD', 'Semantic Segmentation', 'aboutMe']
     selectbox = st.sidebar.selectbox("선택하세요", selectboxList)
     
@@ -106,11 +107,11 @@ def main() :
         #         # #print(detection_model.signatures['serving_default'].output_shapes)
 
         #         show_inference(detection_model, TEST_IMAGE_PATHS)
-                # for image_path in TEST_IMAGE_PATHS:  #여러장 지원할 때, 현재 1장만 지원함 
-                #     show_inference(detection_model, image_path)
-            ############여기까지 실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
-            ############여기까지 실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
-            ############ 여기서까지 주석 #######
+        #         for image_path in TEST_IMAGE_PATHS:  #여러장 지원할 때, 현재 1장만 지원함 
+        #             show_inference(detection_model, image_path)
+            ###########여기까지 실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
+            ###########여기까지 실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
+            ########### 여기서까지 주석 #######
             
         
         ##### cpu문제로 이미지 보여주기용 입니다. #########
@@ -118,46 +119,26 @@ def main() :
         warningPrint()
         
         st.write('Object Detection을 local에서 하는 캡쳐영상 입니다.')
-        video_file = open('data/videos/show/tfod_image_processing_output_final.mp4', 'rb')
+        video_file = open('data/videos/show/tfod_image_processing.mp4', 'rb')
         video_bytes = video_file.read()
         st.video(video_bytes)
 
         # 미리 작업된 사진 고르기 
         st.write(' ')
-        st.info('이미지를 선택해서 탐색 결과를 볼 수도 있습니다. (사전에 object dectection이 완료된 사진')
-        
-        st.write('사진을 선택해주세요')
-
-        radioSelection = st.radio('샘플사진을 선택하세요', ['pic1', 'pic2', 'pic3', 'pic4' ])
-        
-        if radioSelection == 'pic1':
-            imgName = 'park-people-1280.jpg'
-            resizedImg = imageResize(radioSelection, imgName, 0.2, 0.2)
-            st.image(resizedImg)
-
-        elif radioSelection == 'pic2':
-            imgName = 'students-640.jpg'
-            resizedImg = imageResize(radioSelection, imgName)
-            st.image(resizedImg)
-
-        elif radioSelection == 'pic3':
-            imgName = 'elder-1920.jpg'
-            resizedImg = imageResize(radioSelection, imgName, 0.15, 0.15)
-            st.image(resizedImg)
-        
-        elif radioSelection == 'pic4':
-            imgName = 'girl-640.jpg'
-            resizedImg = imageResize(radioSelection, imgName)
-            st.image(resizedImg)
+       
+        fileNameList = ['pedestrain-car.png', 'students-640.jpg', 'elder-1920.jpg', 'girl-640.jpg', \
+                                'crosswalk.jpg']
+        # localImageShow() 라디오버튼 및 사진 미리보기 보여주는 함수
+        imgName = localImageShow(fileNameList)
 
         if st.button('선택한 이미지 디텍션 하기') :
-            fakeShow(imgName)
+            fakeShow(imgName, addDir='tfod')  #파라미터로 디렉토리명 넘겨주기
             st.text('<CPU의 한계로 인해.. 미리 작업이 완료된 사진 입니다.>')
+
         ##### cpu문제로 이미지 보여주기용 입니다. #########
         ##### cpu문제로 이미지 보여주기용 입니다. #########
 
-
-    elif selectbox == 'Video Object Detection' :
+    elif selectbox == 'TF Video Object Detection' :
         
         st.title('Tensorflow Model Object Detection')
         
@@ -172,15 +153,18 @@ def main() :
         warningPrint()
         
         st.write('Object Dectection하는 과정 입니다.')
-        video_file = open('data/videos/show/complete_ftod_video_output.mp4', 'rb')
+        video_file = open('data/videos/show/tfod_video_processing.mp4', 'rb')
         video_bytes = video_file.read()
         st.video(video_bytes)
 
-        st.write('Object Dectection이 완료된 영상 입니다.')
-        video_file = open('data/videos/show/complete_ftod_video_output.mp4', 'rb')
+        st.write(' ')
+        st.write('다음은 Object Dectection이 완료된 영상 입니다.')
+        st.write('같은 영상으로 YOLO 모델로  Object Dectection 한 영상도 있으니 비교해 보세요 ^^')
+        video_file = open('data/videos/show/complete_tfod_video_output.mp4', 'rb')
         video_bytes = video_file.read()
         st.video(video_bytes)
 
+        ####### 워닝 및 비디오만 보여주기
         ####### 워닝 및 비디오만 보여주기
 
         ############실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
@@ -291,16 +275,81 @@ def main() :
         st.write('')
         st.write('이제 아래 버튼을 누르면 SSD 모델을 이용해서 \
                     Object Dectection 할 수 있습니다.')
-        st.text('아래의 사진을 확인해 보세요. (원본사진을 확인하세요)')
-        st.image('data/images/test/traffic-640.jpg')
+
+        st.write('자~ 이제 사진 파일을 업로드 하세요! AI가 분석해드립니다^^')
+
+        radioSelection = st.radio('사진 또는 동영상을 선택하세요', ['사진', '동영상'])
+        
+        if radioSelection == '사진' :
+            upload_img_list = st.file_uploader('이미지 파일 업로드', type=['png', 'jpeg', 'jpg'], accept_multiple_files=True)
+            # 이미지 선택만 눌러도 버튼이 활성화 되는 것 방지
+            if len(upload_img_list) == 0: # 라디오 선택 시 길이는 0 (업로드 안했을 때)
+                upload_img_list = None
+
+            upload_video = None #변수 선언되기 전에 사용되는거 방지 (아래코드에서 if로 쓰기때문)
+        else :
+            upload_video = st.file_uploader('동영상 파일 업로드', type=['mp4', 'avi'], accept_multiple_files=False)
+            upload_img_list = None
+
+
+        ############실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
+        ############실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
+        if upload_img_list is not None:
+
+            if st.button('SSD object detection') :
+            
+                
+                #filename = save_uploaded_file(directory, img)
+
+               
+                # # # # 모델 불러오기 , 함수호출
+                model_name = 'ssd_mobilenet_v2_fpnlite_640x640_coco17_tpu-8'
+                model_date = '20200711'
+                detection_model = load_model(model_name, model_date)
+                #print(detection_model.signatures['serving_default'].output_dtypes)
+                #print(detection_model.signatures['serving_default'].output_shapes)
+
+                # 파일저장 및 파일이름 리스트
+                directory = 'data/images/user-upload'
+                filenameList = []
+                for upload_img in upload_img_list:
+                    img = load_image(upload_img)
+                    filename = save_uploaded_file(directory, img)    # 이미지 저장
+                    filenameList.append(filename)
+                    print ('{} 저장하였습니다.'.format(filename))
+
+                #여러장 처리
+                for image_path in filenameList:
+                    print(directory + "/" + image_path)
+                    show_inference(detection_model, directory + "/" + image_path)
+            ############실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
+            ############실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
 
          ###### warning 및 동영상으로 대체 부분 ######
         ###### warning 및 동영상으로 대체 부분 ######
-        text = '이미지'
+        
+        text = '이미지' # warningPrint() 파라미터 넘겨주기 string
         warningPrint(text)
 
-        st.write('미리 로컬에서 오브젝트 디텍션을 마친 이미지 입니다.')
-        st.image('data/images/show/ssd_output.jpg')
+        
+        fileNameList = ['bike-640.jpg', 'bike_waiting.png', 'hanoi-640.jpg', 'traffic-640.jpg', \
+                            'couplebike-640.jpg', 'ford-640.jpg']
+        imgName = localImageShow(fileNameList)
+
+        if st.button('선택한 이미지 디텍션 하기') :
+            fakeShow(imgName, addDir='ssd')
+            st.text('<CPU의 한계로 인해.. 미리 작업이 완료된 사진 입니다.>')
+
+        # 원래 로컬 파일 보여주는 코드
+        # st.write('대신 미리 로컬에서 오브젝트 디텍션을 마친 이미지를 확인해 보세요.')
+        # st.image('data/images/show/ssd_output.jpg')
+
+        # st.write(' ')
+        # st.write('다음은 SSD 로 로컬에서 실행되는 영상 입니다.')
+        # video_file = open('data/videos/show/ssd_video_processing.mp4', 'rb')
+        # video_bytes = video_file.read()
+        # st.video(video_bytes)
+        
          ###### warning 및 동영상으로 대체 부분 ######
         ###### warning 및 동영상으로 대체 부분 ######
 
@@ -382,6 +431,10 @@ def main() :
         
         if radioSelection == '사진' :
             upload_img_list = st.file_uploader('이미지 파일 업로드', type=['png', 'jpeg', 'jpg'], accept_multiple_files=True)
+            # 이미지 선택만 눌러도 버튼이 활성화 되는 것 방지
+            if len(upload_img_list) == 0: # 라디오 선택 시 길이는 0 (업로드 안했을 때)
+                upload_img_list = None
+
             upload_video = None #변수 선언되기 전에 사용되는거 방지 (아래코드에서 if로 쓰기때문)
         else :
             upload_video = st.file_uploader('동영상 파일 업로드', type=['mp4', 'avi'], accept_multiple_files=False)
@@ -391,16 +444,36 @@ def main() :
         ###### warning 및 동영상으로 대체 부분 ######
         warningPrint()
         
-        st.text('Object Dectection이 완료된 사진 또는 동영상 영상을 선택하세요')
+        st.write('Object Dectection이 완료된 사진 또는 동영상 영상을 선택하세요')
         fakeSelection = st.radio('사진 또는 동영상을 선택하세요', ['image', 'video'])
+
+        # 이미지 선택일 경우
         if fakeSelection == 'image' :
             st.write('<로컬에서 확인한 YOLO 이미지 Dectection 영상>')
-            video_file = open('data/videos/show/complete_ftod_video_output.mp4', 'rb')
+            video_file = open('data/videos/show/yolo_image_prosessing.mp4', 'rb')
             video_bytes = video_file.read()
             st.video(video_bytes)   
+
+            # 미리 작업된 사진 고르기 
+            st.write(' ')
+            fileNameList = ['ford-640.jpg', 'students-640.jpg', 'elder-1920.jpg', 'girl-640.jpg', \
+                                'bike-couple-640.jpg']
+            # localImageShow() 라디오버튼 및 사진 미리보기 보여주는 함수
+            imgName = localImageShow(fileNameList)
+
+            if st.button('선택한 이미지 디텍션 하기') :
+                fakeShow(imgName, addDir='yolo')  #파라미터로 디렉토리명 넘겨주기
+                st.text('<CPU의 한계로 인해.. 미리 작업이 완료된 사진 입니다.>')
+
         else :
             st.write('<로컬에서 확인한 YOLO 동영상 Dectection 영상>')
-            video_file = open('data/videos/show/complete_ftod_video_output.mp4', 'rb')
+            video_file = open('data/videos/show/yolo_video_processing.mp4', 'rb')
+            video_bytes = video_file.read()
+            st.video(video_bytes)   
+
+            st.write(' ')
+            st.write('< YOLO Object Dectection 완료 영상>')
+            video_file = open('data/videos/show/yolo_video_output.mp4', 'rb')
             video_bytes = video_file.read()
             st.video(video_bytes)   
         
@@ -432,14 +505,15 @@ def main() :
         #             yolo = YOLO(0.6, 0.5)
         #             #클래스 파일 들어 있는 곳 지정
         #             all_classes = get_classes('data/coco_classes.txt')
-
+        #             print('load model complete')
+                    
         #             #image = cv2.imread('data/images/test/test1.jpg')
         #             for i, image in enumerate(filenameList) :
         #                 image = cv2.imread(directory + '/' + image)
                         
         #                 result_image = detect_image(image, yolo, all_classes)
 
-        #                 #이미지가 커서 축소해서 보여주기 
+        #                 #이미지가 커서 축소해서 보여주기  # 현재는 축소 안함
         #                 scaleX = 1.0 
         #                 scaleY = 1.0
         #                 scaleDn = cv2.resize(result_image, None, fx=scaleX, fy=scaleY, interpolation=cv2.INTER_LINEAR)
