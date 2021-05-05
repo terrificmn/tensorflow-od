@@ -1,7 +1,7 @@
 from operator import truediv
 import cv2
 import time
-from yolo import detect_image, get_classes 
+from process.yolo import detect_image, get_classes 
 from yolo_model.yolo_model import YOLO
 
 
