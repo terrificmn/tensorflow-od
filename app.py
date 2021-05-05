@@ -125,7 +125,7 @@ def main() :
 
         # 미리 작업된 사진 고르기 
         st.write(' ')
-       
+
         fileNameList = ['pedestrain-car.png', 'students-640.jpg', 'elder-1920.jpg', 'girl-640.jpg', \
                                 'crosswalk.jpg']
         # localImageShow() 라디오버튼 및 사진 미리보기 보여주는 함수
@@ -301,7 +301,6 @@ def main() :
                 
                 #filename = save_uploaded_file(directory, img)
 
-               
                 # # # # 모델 불러오기 , 함수호출
                 model_name = 'ssd_mobilenet_v2_fpnlite_640x640_coco17_tpu-8'
                 model_date = '20200711'
@@ -325,20 +324,23 @@ def main() :
             ############실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
             ############실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
 
-         ###### warning 및 동영상으로 대체 부분 ######
+        ####### warning 및 동영상으로 대체 부분 ######
         ###### warning 및 동영상으로 대체 부분 ######
         
         text = '이미지' # warningPrint() 파라미터 넘겨주기 string
         warningPrint(text)
 
-        
-        fileNameList = ['bike-640.jpg', 'bike_waiting.png', 'hanoi-640.jpg', 'traffic-640.jpg', \
-                            'couplebike-640.jpg', 'ford-640.jpg']
-        imgName = localImageShow(fileNameList)
+        fakeSelection = st.radio('사진 또는 동영상을 선택하세요', ['image', 'video'])        
+        if fakeSelection == 'image' :
+            fileNameList = ['bike-640.jpg', 'bike_waiting.png', 'hanoi-640.jpg', 'traffic-640.jpg', \
+                                'couplebike-640.jpg', 'ford-640.jpg']
+            imgName = localImageShow(fileNameList)
 
-        if st.button('선택한 이미지 디텍션 하기') :
-            fakeShow(imgName, addDir='ssd')
-            st.text('<CPU의 한계로 인해.. 미리 작업이 완료된 사진 입니다.>')
+            if st.button('선택한 이미지 디텍션 하기') :
+                fakeShow(imgName, addDir='ssd')
+                st.text('<CPU의 한계로 인해.. 미리 작업이 완료된 사진 입니다.>')
+        else : 
+            st.write('you need to create codes ... here for video')
 
         # 원래 로컬 파일 보여주는 코드
         # st.write('대신 미리 로컬에서 오브젝트 디텍션을 마친 이미지를 확인해 보세요.')
@@ -350,7 +352,7 @@ def main() :
         # video_bytes = video_file.read()
         # st.video(video_bytes)
         
-         ###### warning 및 동영상으로 대체 부분 ######
+        ###### warning 및 동영상으로 대체 부분 ######
         ###### warning 및 동영상으로 대체 부분 ######
 
         ############실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
