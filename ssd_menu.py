@@ -1,6 +1,5 @@
 import streamlit as st
 
-
 from utils.ec2_warning import warningPrint
 from utils.local import localImageShow
 from utils.fake import fakeShow
@@ -48,33 +47,30 @@ def ssdDections ():
 
     ############실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
     ############실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
-    if upload_img_list is not None:
+    # if upload_img_list is not None:
+    #     if st.button('SSD object detection') :
+    #         #filename = save_uploaded_file(directory, img)
 
-        if st.button('SSD object detection') :
-        
-            
-            #filename = save_uploaded_file(directory, img)
+    #         # # # # 모델 불러오기 , 함수호출
+    #         model_name = 'ssd_mobilenet_v2_fpnlite_640x640_coco17_tpu-8'
+    #         model_date = '20200711'
+    #         detection_model = load_model(model_name, model_date)
+    #         #print(detection_model.signatures['serving_default'].output_dtypes)
+    #         #print(detection_model.signatures['serving_default'].output_shapes)
 
-            # # # # 모델 불러오기 , 함수호출
-            model_name = 'ssd_mobilenet_v2_fpnlite_640x640_coco17_tpu-8'
-            model_date = '20200711'
-            detection_model = load_model(model_name, model_date)
-            #print(detection_model.signatures['serving_default'].output_dtypes)
-            #print(detection_model.signatures['serving_default'].output_shapes)
+    #         # 파일저장 및 파일이름 리스트
+    #         directory = 'data/images/user-upload'
+    #         filenameList = []
+    #         for upload_img in upload_img_list:
+    #             img = load_image(upload_img)
+    #             filename = save_uploaded_file(directory, img)    # 이미지 저장
+    #             filenameList.append(filename)
+    #             print ('{} 저장하였습니다.'.format(filename))
 
-            # 파일저장 및 파일이름 리스트
-            directory = 'data/images/user-upload'
-            filenameList = []
-            for upload_img in upload_img_list:
-                img = load_image(upload_img)
-                filename = save_uploaded_file(directory, img)    # 이미지 저장
-                filenameList.append(filename)
-                print ('{} 저장하였습니다.'.format(filename))
-
-            #여러장 처리
-            for image_path in filenameList:
-                print(directory + "/" + image_path)
-                show_inference(detection_model, directory + "/" + image_path)
+    #         #여러장 처리
+    #         for image_path in filenameList:
+    #             print(directory + "/" + image_path)
+    #             show_inference(detection_model, directory + "/" + image_path)
         ############실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
         ############실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
 
@@ -83,6 +79,14 @@ def ssdDections ():
     
     text = '이미지' # warningPrint() 파라미터 넘겨주기 string
     warningPrint(text)
+    # 원래 로컬 파일 작업 영상 보여주는 코드
+    st.write(' ')
+    st.write('다음은 SSD 로 로컬에서 실행되는 영상 입니다.')
+    video_file = open('data/videos/show/ssd_video_processing.mp4', 'rb')
+    video_bytes = video_file.read()
+    st.video(video_bytes)
+    st.write('')
+    st.write('Object Dectection이 완료된 사진 또는 동영상 영상을 선택하세요')
 
     fakeSelection = st.radio('사진 또는 동영상을 선택하세요', ['image', 'video'])        
     if fakeSelection == 'image' :
@@ -96,43 +100,31 @@ def ssdDections ():
     else : 
         st.write('you need to create codes ... here for video')
 
-    # 원래 로컬 파일 보여주는 코드
-    # st.write('대신 미리 로컬에서 오브젝트 디텍션을 마친 이미지를 확인해 보세요.')
-    # st.image('data/images/show/ssd_output.jpg')
-
-    # st.write(' ')
-    # st.write('다음은 SSD 로 로컬에서 실행되는 영상 입니다.')
-    # video_file = open('data/videos/show/ssd_video_processing.mp4', 'rb')
-    # video_bytes = video_file.read()
-    # st.video(video_bytes)
-    
     ###### warning 및 동영상으로 대체 부분 ######
     ###### warning 및 동영상으로 대체 부분 ######
 
     ############실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
     ############실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
     #한장만 저장
-    # if st.button('SSD object detection') :
+    if st.button('SSD object detection') :
         
-    #     # directory = 'data/images/user-upload'
-    #     #filename = save_uploaded_file(directory, img)
+        testFile = 'traffic-640.jpg'
+        PATH_TO_TEST_IMAGES_DIR = pathlib.Path('data/images/test')
+        TEST_IMAGE_PATHS = pathlib.Path(PATH_TO_TEST_IMAGES_DIR, testFile)
+        print(TEST_IMAGE_PATHS)
 
-    #     testFile = 'traffic-640.jpg'
-    #     PATH_TO_TEST_IMAGES_DIR = pathlib.Path('data/images/test')
-    #     TEST_IMAGE_PATHS = pathlib.Path(PATH_TO_TEST_IMAGES_DIR, testFile)
-    #     print(TEST_IMAGE_PATHS)
-    #     #TEST_IMAGE_PATHS = sorted(list(PATH_TO_TEST_IMAGES_DIR.glob("*.jpg")))# 여러장일 때사용
+        # # # # 모델 불러오기 , 함수호출
+        model_name = 'ssd_mobilenet_v2_fpnlite_640x640_coco17_tpu-8'
+        model_date = '20200711'
+        detection_model = load_model(model_name, model_date)
+        # #print(detection_model.signatures['serving_default'].output_dtypes)
+        # #print(detection_model.signatures['serving_default'].output_shapes)
 
-    #     # # # # 모델 불러오기 , 함수호출
-    #     model_name = 'ssd_mobilenet_v2_fpnlite_640x640_coco17_tpu-8'
-    #     model_date = '20200711'
-    #     detection_model = load_model(model_name, model_date)
-    #     # #print(detection_model.signatures['serving_default'].output_dtypes)
-    #     # #print(detection_model.signatures['serving_default'].output_shapes)
-
-    #     show_inference(detection_model, TEST_IMAGE_PATHS)
-        #for image_path in TEST_IMAGE_PATHS:
-        # show_inference(detection_model, image_path)
+        ## ssd 는 고정 이미지로 한장만 불러와서 예측하고 있음
+        ## 추후 파일 입력 받고, 동영상 부분도 함수로 만들어서 tfod와 같이 사용할 수 있게 하기
+        ## 일단 비디오 부분은 yolo랑 같이 할지 생각해볼 것. yolo랑 같이 하면 파라미터를 추가해야함
+        show_inference(detection_model, TEST_IMAGE_PATHS)
+        
 
     # ############실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
     # ############실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 

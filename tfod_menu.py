@@ -1,7 +1,9 @@
 import streamlit as st
+import pathlib
 
 #사용자 함수
 from process.tensorflow_od import load_model, show_inference
+
 from utils.image_func import load_image, save_uploaded_file 
 from utils.video_func import save_uploaded_video
 
@@ -70,8 +72,7 @@ def tfodDections(type='image') :
         #         # #print(detection_model.signatures['serving_default'].output_shapes)
 
         #         show_inference(detection_model, TEST_IMAGE_PATHS)
-        #         for image_path in TEST_IMAGE_PATHS:  #여러장 지원할 때, 현재 1장만 지원함 
-        #             show_inference(detection_model, image_path)
+
             ###########여기까지 실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
             ###########여기까지 실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
             ########### 여기서까지 주석 #######
@@ -130,85 +131,88 @@ def tfodDections(type='image') :
         ####### 워닝 및 비디오만 보여주기
         ####### 워닝 및 비디오만 보여주기
 
+        ############실제 작동하는 코드 부분
         ############실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
         ############실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
         # if st.button('물체 탐색 시작하기') :
-        #     #20210210/centernet_mobilenetv2fpn_512x512_coco17_od.tar.gz
-        #     #model_name = 'ssd_mobilenet_v1_coco_2017_11_17'
-            
         #     model_name = 'centernet_resnet50_v2_512x512_kpts_coco17_tpu-8'
         #     model_date = '20200711'
         #     #http://download.tensorflow.org/models/object_detection/tf2/20200711/faster_rcnn_resnet152_v1_640x640_coco17_tpu-8.tar.gz
-        #     #model_name = 'faster_rcnn_resnet152_v1_640x640_coco17_tpu-8'
-        #     #model_date = '20200711'
-        #     #model_name = 'mask_rcnn_inception_resnet_v2_1024x1024_coco17_gpu-8'
+            
         #     detection_model = load_model(model_name, model_date)
         #     print(detection_model.signatures['serving_default'].output_dtypes)
         #     print(detection_model.signatures['serving_default'].output_shapes)
 
+        #     # 처음에 어차피 동영상은 불가능할거라 생각하고 이미지만 탐색하게 했는데 이미지 조차도 힘들어서 동영상은 보여주기 용으로 추후 작업했으나, 충분히 적용가능함
+        #     # 현재는 업로드 기능 지원안함 (아예 안 만듬, 추후 필요하면 yolo코드를 참고해서  저장코드 정도만 만들어주면 작동할 듯)
+        #     # 일부러 다른 곳과 형식을 맞추기 위해서.. 변수로 넣어줌
+        #     directory = 'data/videos'
+        #     filename = 'road_dog_bike_for_tfod_video.mp4'
+        #     videoPath_file = directory + '/' + filename
 
-        #     # 카메라의 영상 실행
-        #     #cap = cv2.VideoCapture(0) # 캠 영상 실행
-        #     cap = cv2.VideoCapture('data/videos/road_dog_bike_for_tfod_video.mp4')
 
-        #     if cap.isOpened() == False:
-        #         print("error occured to start to play a video")
+            # reCaptureVideo() 함수를 사용하면 되나, tfod의 모델을 넘겨줘야는데 그러려면 파라미터를 추가해줘야해서 함수사용안함
+            # 따로 만들던가, ssd동영상 부분이 안만들어져있으니 그 부분을 생각하고 만들기~ 
+            # 그리고 reCaptureVideo()를 아예 yolo용으로 만드는 것을 생각해보기
 
-        #     else:
+            # if cap.isOpened() == False:
+            #     print("error occured to start to play a video")
+
+            # else:
                 
-        #         #######
-        #         frame_width = int(cap.get(3))
-        #         frame_height = int(cap.get(4))
+            #     #######
+            #     frame_width = int(cap.get(3))
+            #     frame_height = int(cap.get(4))
 
-        #         # #이미지 사이즈 줄이기
-        #         # if int(frame_width / 2) % 2 ==0 : #짝수 
-        #         #     frame_width = int(frame_width / 2)
-        #         # else:
-        #         #     frame_width = int(frame_width / 2) + 1 #홀수가 안되게 만들어 줌
+            #     # #이미지 사이즈 줄이기
+            #     # if int(frame_width / 2) % 2 ==0 : #짝수 
+            #     #     frame_width = int(frame_width / 2)
+            #     # else:
+            #     #     frame_width = int(frame_width / 2) + 1 #홀수가 안되게 만들어 줌
 
-        #         # if int(frame_height / 2) % 2 == 0 :
-        #         #     frame_height = int(frame_height / 2)
-        #         # else:
-        #         #     frame_height = int(frame_height / 2 ) + 1
+            #     # if int(frame_height / 2) % 2 == 0 :
+            #     #     frame_height = int(frame_height / 2)
+            #     # else:
+            #     #     frame_height = int(frame_height / 2 ) + 1
 
-        #         #fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # h264는 에러발생
-        #         fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # mp4v 성공
-        #         #fourcc = cv2.VideoWriter_fourcc(*'h264')  # x264 , h264 실패
-        #         out = cv2.VideoWriter('data/videos/output.mp4', 
-        #                                 fourcc,
-        #                                 10, 
-        #                                 ( frame_width, frame_height) )
-        #         ## 저장하는 코드 write()메소드 부분을 주석 해제할 것.. 아래코드
-        #         #######
-        #         totalTime = 0
-        #         while cap.isOpened():
-        #             ret, frame = cap.read() #동영상의 사진을 하나씩 frame에 넣어준다
-        #             if ret == True:
-        #                 #cv2.imshow('Frame', frame)
-        #                 startTime = time.time()
+            #     #fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # h264는 에러발생
+            #     fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # mp4v 성공
+            #     #fourcc = cv2.VideoWriter_fourcc(*'h264')  # x264 , h264 실패
+            #     out = cv2.VideoWriter('data/videos/output.mp4', 
+            #                             fourcc,
+            #                             10, 
+            #                             ( frame_width, frame_height) )
+            #     ## 저장하는 코드 write()메소드 부분을 주석 해제할 것.. 아래코드
+            #     #######
+            #     totalTime = 0
+            #     while cap.isOpened():
+            #         ret, frame = cap.read() #동영상의 사진을 하나씩 frame에 넣어준다
+            #         if ret == True:
+            #             #cv2.imshow('Frame', frame)
+            #             startTime = time.time()
 
-        #                 isImage = False # 비디오로 만들 것이기 때문에 False 를 준다. (기본으로 True)
-        #                 img = show_inference(detection_model, frame, isImage)  # 이미지 경로는 필요없고 이미 np array로 받아왔기때문에 frame넘겨주면 됨
-        #                 #show_inference(detection_model, frame)
-        #                 endTime = time.time()
-        #                 # 처리 시간 출력
-        #                 precessTime = endTime-startTime
-        #                 print(precessTime)
-        #                 totalTime += precessTime
-        #                 #save resized image 
-        #                 out.write(img)
+            #             isImage = False # 비디오로 만들 것이기 때문에 False 를 준다. (기본으로 True)
+            #             img = show_inference(detection_model, frame, isImage)  # 이미지 경로는 필요없고 이미 np array로 받아왔기때문에 frame넘겨주면 됨
+            #             #show_inference(detection_model, frame)
+            #             endTime = time.time()
+            #             # 처리 시간 출력
+            #             precessTime = endTime-startTime
+            #             print(precessTime)
+            #             totalTime += precessTime
+            #             #save resized image 
+            #             out.write(img)
 
-        #                 # if cv2.waitKey(25) & 0xFF == 27:  #브라우저에서는 안되는 듯
-        #                 #     break
-        #             else:
-        #                 break
+            #             # if cv2.waitKey(25) & 0xFF == 27:  #브라우저에서는 안되는 듯
+            #             #     break
+            #         else:
+            #             break
 
                 
-        #         cap.release()
-        #         print('complete')
-        #         print('total time: {}'.format(totalTime))
-                #video_file = open('data/videos/test.mp4', 'rb')  # mp4v로 인코딩 했다면 브라우저에서 실행이 안됨
-                #video_bytes = video_file.read() 
-                #st.video(video_bytes) 
+            #     cap.release()
+
+                ## 영상 보여주는 부분
+                ## video_file = open('data/videos/test.mp4', 'rb')  # mp4v로 인코딩 했다면 브라우저에서 실행이 안됨
+                ## video_bytes = video_file.read() 
+                ## st.video(video_bytes) 
         ############실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
         ############실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 

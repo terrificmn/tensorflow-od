@@ -1,4 +1,5 @@
 import streamlit as st
+import cv2
 
 #사용자 함수
 from process.yolo import get_classes, detect_image
@@ -8,6 +9,11 @@ from process.saveCap import reCaptureVideo
 from utils.ec2_warning import warningPrint
 from utils.local import localImageShow
 from utils.fake import fakeShow
+from utils.image_func import load_image, save_uploaded_file
+from utils.video_func import save_uploaded_video
+
+#욜로 모델 만들기
+from yolo_model.yolo_model import YOLO
 
 
 def yoloDections ():
@@ -109,7 +115,7 @@ def yoloDections ():
     ###########실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
     ###########실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
 
-    #이미지 업로드일 경우 실행
+    ##이미지 업로드일 경우 실행
     # if upload_img_list is not None:
     #     # 이미지 로드
     #     if st.button('저장 및 분석하기') :
@@ -122,9 +128,6 @@ def yoloDections ():
     #             filenameList.append(filename)
     #             print ('{} 저장하였습니다.'.format(filename))
 
-    #         #욜로 모델 만들기
-    #         from yolo_model.yolo_model import YOLO
-            
     #         st.spinner()
     #         with st.spinner(text='파일이 저장 되었습니다. 분석을 시작합니다.'):
     #             #yolo 객체 만들기
@@ -133,10 +136,8 @@ def yoloDections ():
     #             all_classes = get_classes('data/coco_classes.txt')
     #             print('load model complete')
                 
-    #             #image = cv2.imread('data/images/test/test1.jpg')
     #             for i, image in enumerate(filenameList) :
     #                 image = cv2.imread(directory + '/' + image)
-                    
     #                 result_image = detect_image(image, yolo, all_classes)
 
     #                 #이미지가 커서 축소해서 보여주기  # 현재는 축소 안함
@@ -149,27 +150,25 @@ def yoloDections ():
     #                 st.image(convertedImg)
     #                 st.success('{}번째 이미지의 YOLO 탐색에 성공하였습니다.'.format(i+1))
 
-    # # video 업로드를 선택했을 때
+    # ## video 업로드를 선택했을 때
     # elif upload_video is not None:
     #     #print(upload_video.size)
         
     #     if st.button('동영상 저장 및 분석하기') :
-            
     #         directory = 'data/videos/user-upload'
     #         #img = loadCheck(upload_video)
     #         filename = save_uploaded_video(upload_video, directory)    # 이미지 저장
             
     #         if filename is not None:
-                
-    #             #videoPath_file = 'data/videos/library1.mp4'
     #             videoPath_file = directory + '/' + filename
                 
     #             type= 'yolo'
     #             # 영상 합성 성공시 True 리턴
     #             if reCaptureVideo(type, videoPath_file) :
-    #             #     #video_file = open('data/videos/test_output1.mp4', 'rb') #mp4v 형식이라 브라우저에서 재생안됨, 추후 h264 대체 openh264 알아볼 것
-    #             #     #video_bytes = video_file.read()
-    #             #     #st.video(video_bytes)
+    #             ## 파일 열어볼 때 현재는 주석 처리(사용안함 - may 2021) / mp4v형식으로 저장되는 형식이라서 브라우저에서 재생아노딤
+    #             ##     #video_file = open('data/videos/test_output1.mp4', 'rb') // 추후 h264 대체 openh264 알아볼 것
+    #             ##     #video_bytes = video_file.read()
+    #             ##     #st.video(video_bytes)
     #                 st.success('영상 합성이 성공하였습니다.')
     #                 st.balloons()
     #             else :
