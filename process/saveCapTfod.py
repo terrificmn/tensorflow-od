@@ -1,11 +1,10 @@
-from operator import truediv
+#from operator import truediv
 import cv2
 import time
-from process.yolo import detect_image, get_classes 
-from yolo_model.yolo_model import YOLO
+from process.tensorflow_od import show_inference
 
-## yolo 전용 비디오 영상 만드는 함수
-def reCaptureVideo(type, videoPath) :
+##tfod video와 ssd video 만드는 함수
+def reCaptureVideoTfod(type, videoPath, model) :
 
     cap = cv2.VideoCapture(videoPath)
 
@@ -35,20 +34,13 @@ def reCaptureVideo(type, videoPath) :
         # 일단, opencv가 h264지원을 안한다는거 같음, 윈도우에서는 방법이 있는거 같은데 
         # mp4v는 잘 되지만, 브라우저에서 지원을 안함 ㅋㅋㅋ
         
-        # 내보내기 부분~ 저장될 디렉토리/파일명
-        out = cv2.VideoWriter('data/videos/test_output.mp4', 
+        # 내보내기 부분~ 저장될 디렉토리/파일명  (파일명은 type을 앞에 붙여주기)
+        out = cv2.VideoWriter('data/videos/' + type + '_output.mp4', 
                                 fourcc,
                                 10, 
                                 ( frame_width, frame_height) )
         ## 저장하는 코드 write()메소드 부분을 주석 해제할 것.. 아래코드
         #######
-        
-        if type == 'yolo' :
-            # yolo 객체 만들기
-            yolo = YOLO(0.6, 0.5)
-            # 클래스 파일 들어 있는 곳 지정
-            # yolo모델은 관련해서 data 디렉토리에 있는데 data로 디렉토리를 고정시켜야 에러가 안남 -예 data_yolo 이런식으로 하면 못찾음
-            all_classes = get_classes('data/coco_classes.txt')
         
         totalTime = 0 #시간 기록 
 
@@ -58,9 +50,9 @@ def reCaptureVideo(type, videoPath) :
                 #cv2.imshow('Frame', frame)
                 startTime = time.time()
                 
-                if type == 'yolo' : #yolo 저장 일 때
-                    processedImg = detect_image(frame, yolo, all_classes)
-                
+                isImage = False # 비디오로 만들 것이기 때문에 False 를 준다. (기본은 True: 이미지에서도 사용함!)
+                processedImg = show_inference(model, frame, isImage)
+            
                 endTime = time.time()
                 # 처리 시간 출력
                 precessTime = endTime-startTime

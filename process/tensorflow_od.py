@@ -82,7 +82,7 @@ def show_inference(model, image_path, isImage=True):
         print(startTime)
         # 영상 캡쳐 일때 처리 (이미 cv2로 열어서 오기 때문에 따로 실행 안함)
         if isImage == False:
-            image_np = image_path
+            image_np = image_path   #이미 동영상 처리에서 cap으로 열린 상태
         else :  # True 이미지일 경우
             image_np = np.array(Image.open(image_path)) # Image.open()은 RGB로 읽어들임. cv2라이브러리만 빼고 (BGR)
         
@@ -103,7 +103,8 @@ def show_inference(model, image_path, isImage=True):
         print(endTime-startTime)
         st.success('분석이 완료 되었습니다.')
         #함수 호출한 곳에서 cv2.write()을 사용하기 때문에 (처음에 cv2로 읽음 그대로 리턴해주면 색이 제대로 저장 나옴)
-        #image_np = cv2.cvtColor(image_np, cv2.COLOR_BGR2RGB)  #st.image로 보여줄려면은 주석해제, BGR에서 RGB로 바꿔야함
+        image_np_only_show = cv2.cvtColor(image_np, cv2.COLOR_BGR2RGB)  #st.image로 보여줄려면은 주석해제, BGR에서 RGB로 바꿔야함
         #st.image로 보여주고 후 리턴은 다시 BGR로 바꿔줘야함
-        st.image(image_np)
+        st.image(image_np_only_show)
+        # 리턴은 원래 BGR형태로 // reCaptureVideoTfod()함수에서 cv에서 다시 저장함
         return image_np

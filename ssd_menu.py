@@ -1,9 +1,12 @@
 import streamlit as st
 
+from process.tensorflow_od import load_model, show_inference
+from process.saveCapTfod import reCaptureVideoTfod
 from utils.ec2_warning import warningPrint
 from utils.local import localImageShow
 from utils.fake import fakeShow
-
+from utils.video_func import save_uploaded_video
+from utils.image_func import load_image, save_uploaded_file
 
 def ssdDections ():
     st.title('SSD: Single Shot Detector')
@@ -44,7 +47,7 @@ def ssdDections ():
         upload_video = st.file_uploader('동영상 파일 업로드', type=['mp4', 'avi'], accept_multiple_files=False)
         upload_img_list = None
 
-
+    #### 이미지/동영상 업로드 정상 확인- 이미지 디텍션/동영상 디텍션 동작 확인 - may11 2011
     ############실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
     ############실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
     # if upload_img_list is not None:
@@ -71,8 +74,57 @@ def ssdDections ():
     #         for image_path in filenameList:
     #             print(directory + "/" + image_path)
     #             show_inference(detection_model, directory + "/" + image_path)
-        ############실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
-        ############실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
+    #     ###########실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
+    #     ###########실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
+
+    # ############실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
+    # ############실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
+    
+    # ### video 업로드를 선택했을 때
+    # elif upload_video is not None:
+    #     #print(upload_video.size)
+    #     if st.button('SSD object detection') :
+            
+    #         ### 모델 불러오기 , 함수호출
+    #         model_name = 'ssd_mobilenet_v2_fpnlite_640x640_coco17_tpu-8'
+    #         model_date = '20200711'
+    #         detection_model = load_model(model_name, model_date)
+    #         # #print(detection_model.signatures['serving_default'].output_dtypes)
+    #         # #print(detection_model.signatures['serving_default'].output_shapes)
+
+    #         ## ssd 는 고정 이미지로 한장만 불러와서 예측하고 있음
+    #         ## 추후 파일 입력 받고, 동영상 부분도 함수로 만들어서 tfod와 같이 사용할 수 있게 하기
+    #         # reCaptureVideo() 함수를 사용하면 되나, tfod의 모델을 넘겨줘야는데 그러려면 파라미터를 추가해줘야해서 함수사용안함
+    #         # 따로 만들던가, ssd동영상 부분이 안만들어져있으니 그 부분을 생각하고 만들기~ 
+    #         # 그리고 reCaptureVideo()를 아예 yolo 전용으로 만드는 것을 생각해보기
+    #         ## 일단 비디오 부분은 yolo랑 같이 할지 생각해볼 것. yolo랑 같이 하면 파라미터를 추가해야함 2021 5 11
+
+    #         #영상 처리 부분
+    #         directory = 'data/videos/user-upload'
+    #         #img = loadCheck(upload_video)
+    #         filename = save_uploaded_video(upload_video, directory)    # 이미지 저장
+            
+    #         if filename is not None:
+    #             videoPath_file = directory + '/' + filename
+                
+    #             # 영상 합성 성공시 True 리턴
+    #             # yolo랑은 다르게 tfod/ssd는 show_inference()함수에 모델을 넘겨줘야해서 파라미터가 다름
+    #             type='ssd'
+    #             if reCaptureVideoTfod(type, videoPath_file, detection_model) :
+    #             ## 파일 열어볼 때 현재는 주석 처리(사용안함 - may 2021) / mp4v형식으로 저장되는 형식이라서 브라우저에서 재생아노딤
+    #             ##     #video_file = open('data/videos/test_output1.mp4', 'rb') // 추후 h264 대체 openh264 알아볼 것
+    #             ##     #video_bytes = video_file.read()
+    #             ##     #st.video(video_bytes)
+    #                 st.success('영상 합성이 성공하였습니다.')
+    #                 st.balloons()
+    #             else :
+    #                 pass
+
+    #         else :
+    #             st.error('파일 저장 중에 에러가 발생하였습니다.')
+    # ############실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
+    # ############실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
+
 
     ####### warning 및 동영상으로 대체 부분 ######
     ###### warning 및 동영상으로 대체 부분 ######
@@ -88,6 +140,8 @@ def ssdDections ():
     st.write('')
     st.write('Object Dectection이 완료된 사진 또는 동영상 영상을 선택하세요')
 
+    st.info('이미지를 선택해서 탐색 결과를 볼 수도 있습니다. -사전에 object dectection이 완료된 사진')
+    ### 미리 작업된 사진 / 동영상 선택 부분
     fakeSelection = st.radio('사진 또는 동영상을 선택하세요', ['image', 'video'])        
     if fakeSelection == 'image' :
         fileNameList = ['bike-640.jpg', 'bike_waiting.png', 'hanoi-640.jpg', 'traffic-640.jpg', \
@@ -102,29 +156,3 @@ def ssdDections ():
 
     ###### warning 및 동영상으로 대체 부분 ######
     ###### warning 및 동영상으로 대체 부분 ######
-
-    ############실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
-    ############실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
-    #한장만 저장
-    if st.button('SSD object detection') :
-        
-        testFile = 'traffic-640.jpg'
-        PATH_TO_TEST_IMAGES_DIR = pathlib.Path('data/images/test')
-        TEST_IMAGE_PATHS = pathlib.Path(PATH_TO_TEST_IMAGES_DIR, testFile)
-        print(TEST_IMAGE_PATHS)
-
-        # # # # 모델 불러오기 , 함수호출
-        model_name = 'ssd_mobilenet_v2_fpnlite_640x640_coco17_tpu-8'
-        model_date = '20200711'
-        detection_model = load_model(model_name, model_date)
-        # #print(detection_model.signatures['serving_default'].output_dtypes)
-        # #print(detection_model.signatures['serving_default'].output_shapes)
-
-        ## ssd 는 고정 이미지로 한장만 불러와서 예측하고 있음
-        ## 추후 파일 입력 받고, 동영상 부분도 함수로 만들어서 tfod와 같이 사용할 수 있게 하기
-        ## 일단 비디오 부분은 yolo랑 같이 할지 생각해볼 것. yolo랑 같이 하면 파라미터를 추가해야함
-        show_inference(detection_model, TEST_IMAGE_PATHS)
-        
-
-    # ############실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 
-    # ############실제 작동 확인 완료 ############### 실제 실행 시 주석을 해제 (cpu한계로 주석처리) 

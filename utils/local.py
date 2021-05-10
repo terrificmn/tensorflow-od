@@ -4,7 +4,6 @@ from process.scaledown import imageResize
 def localImageShow(fileNameList, needResizedImgNp='no') :
     # 미리 작업된 사진 고르기 
     st.write(' ')
-    st.info('이미지를 선택해서 탐색 결과를 볼 수도 있습니다. 사전에 object dectection이 완료된 사진')
     
     st.write('사진을 선택해주세요')
     
