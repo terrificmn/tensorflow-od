@@ -47,36 +47,3 @@ COPY . .
 
 EXPOSE 8501
 CMD streamlit run app.py --server.maxUploadSize=10
-
-
-
-
-# # python3-opencv libgl1-mesa-glx
-
-# #디렉토리 
-# #RUN mkdir -p /tensorflow
-# #RUN git clone https://github.com/tensorflow/models.git /tensorflow
-# FROM python:3.8.8
-
-# WORKDIR  /src/models/research
-
-# RUN protoc object_detection/protos/*.proto --python_out=.
-
-# RUN export PYTHONPATH=$PYTHONPATH:/src/models/research:/src/models/research/slim
-
-
-
-# WORKDIR /src
-
-# COPY requirements.txt ./requirements.txt 
-# RUN pip3 install -r requirements.txt
-
-
-
-
-# # # 파일들을 복사 (requirements에 있는 파일들)
-# COPY . .  
-
-# EXPOSE 8501
-# CMD streamlit run app.py
-

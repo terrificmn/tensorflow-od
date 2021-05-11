@@ -2,29 +2,15 @@
 # 소스파일을 컨테이너로 복사시켜서 해야지 실행이 됨
 # 로컬에서 protoc 컴파일 후 api설치까지 해도.. 컨테이너에서 인식을 못하는거 같음
 # 도커 컨테이너 안에 적용을 시킨 후 (protoc등..api설치까지)
-import os
 
 ############ 도커파일로 배포할 때는 아래코드 제거할 것-gpu 설정 코드임
-os.environ["KERAS_BACKEND"] = "plaidml.keras.backend"
-os.environ["PLAIDML_NATIVE_PATH"] = "/home/sgtocta/.local/lib/libplaidml.so"
-os.environ["RUNFILES_DIR"]="/home/sgtocta/.local/share/plaidml"
+# import os
+# os.environ["KERAS_BACKEND"] = "plaidml.keras.backend"
+# os.environ["PLAIDML_NATIVE_PATH"] = "/home/sgtocta/.local/lib/libplaidml.so"
+# os.environ["RUNFILES_DIR"]="/home/sgtocta/.local/share/plaidml"
 ############ 도커파일로 배포할 때는 위의 코드 제거할 것
 
 import streamlit as st
-import pathlib
-import cv2
-import time
-
-from PIL import Image
-from datetime import datetime
-
-from object_detection.utils import label_map_util
-
-
-# from scaledown import imageResize
-# from fake import fakeShow
-# from ec2_warning import warningPrint
-# from local import localImageShow
 
 # 왼쪽 메뉴 불러오기
 from tfod_menu import tfodDections
@@ -37,15 +23,22 @@ st.set_page_config(page_title='ml', page_icon=None, layout='centered', initial_s
 
 def main() :
 
-    selectboxList = ['메뉴를 선택하세요', 'Tensorflow-object-detection', 'TF Video Object Detection',
+    selectboxList = ['여기를 선택하세요', 'Tensorflow-object-detection', 'TF Video Object Detection',
                         'YOLO', 'SSD', 'Semantic Segmentation', 'aboutMe']
     selectbox = st.sidebar.selectbox("선택하세요", selectboxList)
     
     
-    if selectbox == '메뉴를 선택하세요' :
-        st.write('안녕하세요, Tensorflow Models를 활용한 이미지/영상 물체 탐색 포트폴리오 입니다.')
-        st.write('방문해 주셔서 감사합니다.')
-        st.write('왼쪽의 메뉴를 선택해 주세요.')
+    if selectbox == '여기를 선택하세요' :
+        st.write('안녕하세요  😃 😀')
+        st.write('')
+        st.write('Tensorflow Models를 활용한 이미지/영상 물체 탐색 포트폴리오 사이트 입니다.')
+        st.write('')
+        st.write('- TensorFlow는 머신러닝을 위한 오픈소스 소프트웨어 입니다.')
+        st.write('- 딥러닝으로 학습된 인공지능을 이용해서 사진 및 동영상 속의 물체를 판별할 수 있습니다.')
+        st.write('')
+        st.write('왼쪽의 메뉴를 선택하면 다양한 model로 Object Dectection을 할 수 있습니다. 💡')
+        st.image('data/images/logo/vw-beetle-intro.jpg')
+        st.write('감사합니다. 🤓')
 
     elif selectbox == 'Tensorflow-object-detection' :
         
