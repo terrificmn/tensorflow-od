@@ -1,4 +1,3 @@
-FROM ubuntu:18.04
 FROM python:3.8.8
 
 # Install apt dependencies
@@ -17,8 +16,6 @@ RUN apt-get update && apt-get install -y \
 #    apt-get install -y ffmpeg 
 # 여기는 테스트
 
-#### 잘됨
-
 # 컨테이너에 만들어준다 (디렉토리) 
 RUN mkdir -p /tensorflow/models 
 COPY /src/models/ /tensorflow/models
@@ -34,13 +31,10 @@ RUN export PYTHONPATH=$PYTHONPATH:/tensorflow/models/research:/tensorflow/models
 RUN cp object_detection/packages/tf2/setup.py .
 RUN python -m pip install .
 
-### 잘됨
-
-
 WORKDIR /src
 COPY requirements.txt ./requirements.txt 
 RUN pip3 install -r requirements.txt
-
+# 배포할 떄 RUN pip3.8 install -r requirements.txt --no-cache-dir
 
 # # 파일들을 복사 (requirements에 있는 파일들)
 COPY . .  

@@ -6,5 +6,5 @@ pandas
 pycocotools
 joblib
 opencv-python-headless
-keras
+keras==2.3.1
 imutils
